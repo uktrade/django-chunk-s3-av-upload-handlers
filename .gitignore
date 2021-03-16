@@ -1,4 +1,5 @@
 .DS_Store
+.pytest_cache
 .idea/
 .tox/
 django_chunk_upload_handlers.egg-info/

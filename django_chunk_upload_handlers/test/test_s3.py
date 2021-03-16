@@ -28,8 +28,8 @@ class S3FileHandlerTestCase(TestCase):
             content_type_extra=None,
         )
 
-    @patch("file_upload_handler.s3.boto3_client")
-    @patch("file_upload_handler.s3.ThreadedS3ChunkUploader")
+    @patch("django_chunk_upload_handlers.s3.boto3_client")
+    @patch("django_chunk_upload_handlers.s3.ThreadedS3ChunkUploader")
     def test_init_connection(self, thread_pool, boto3_client):
         self.s3_file_handler = S3FileUploadHandler(
             request=self.request,
@@ -46,7 +46,7 @@ class S3FileHandlerTestCase(TestCase):
 
         thread_pool.assert_called_once()
 
-    @patch("file_upload_handler.s3.boto3_client")
+    @patch("django_chunk_upload_handlers.s3.boto3_client")
     def test_chunk_is_received(self, client):
         self.create_s3_handler()
         self.s3_file_handler.executor = MagicMock()
@@ -57,9 +57,9 @@ class S3FileHandlerTestCase(TestCase):
         # Check that we started to send data
         self.s3_file_handler.executor.mock_calls[0] = call.send(b"4")
 
-    @patch("file_upload_handler.s3.boto3_client")
-    @patch("file_upload_handler.s3.S3Boto3Storage")
-    @patch("file_upload_handler.s3.S3Boto3StorageFile")
+    @patch("django_chunk_upload_handlers.s3.boto3_client")
+    @patch("django_chunk_upload_handlers.s3.S3Boto3Storage")
+    @patch("django_chunk_upload_handlers.s3.S3Boto3StorageFile")
     def test_addition_of_av_header(self, storage_file, storage, client):
         self.create_s3_handler()
 
@@ -96,8 +96,8 @@ class S3FileHandlerTestCase(TestCase):
 
 
 class ThreadedS3ChunkUploaderTestCase(TestCase):
-    @patch("file_upload_handler.s3.S3_MIN_PART_SIZE", 10)
-    @patch("file_upload_handler.s3.boto3_client")
+    @patch("django_chunk_upload_handlers.s3.S3_MIN_PART_SIZE", 10)
+    @patch("django_chunk_upload_handlers.s3.boto3_client")
     def test_add_future_with_body(self, client):
         test_etag = "test"
         client.upload_part.return_value = {"ETag": test_etag}

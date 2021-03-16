@@ -19,6 +19,7 @@ setup(
     install_requires=[
         "django~=3.1.6",
         "boto3~=1.14.10",
+        "django-storages~=1.11.1",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
