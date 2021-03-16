@@ -25,10 +25,10 @@ Using in a Django logging configuration:
 
 .. code-block:: python
 
-	INSTALLED_APPS = [
-		...
-		"django_chunk_upload_handlers",
-	]
+    INSTALLED_APPS = [
+        ...
+        "django_chunk_upload_handlers",
+    ]
 
     FILE_UPLOAD_HANDLERS = (
         "django_chunk_upload_handlers.clam_av.ClamAVFileUploadHandler",
@@ -40,7 +40,7 @@ Dependencies
 
 This project is a Django app and depends on the Django package. 
 
-The ``s3`` file handler depends on  `boto3 <https://github.com/boto/boto3/>`_
+The ``s3`` file handler depends on  `boto3 <https://github.com/boto/boto3/>`_ and `django-storages <https://github.com/jschneier/django-storages/>`_ 
 
 ``settings.DEFAULT_FILE_STORAGE`` must be set to ``"storages.backends.s3boto3.S3Boto3Storage"`` or a class that derives from it.
 
