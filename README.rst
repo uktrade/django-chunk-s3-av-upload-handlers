@@ -79,7 +79,7 @@ The directory path to use as root for uploads. ``CHUNK_UPLOADER_S3_ROOT_DIRECTOR
 Adds a timestamp to uploaded object's file name if set. Defaults to ``True``.
 
 ClamAV
-***
+******
 
 :code:`CLAM_AV_USERNAME`
 The ClamAV service username.
