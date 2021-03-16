@@ -4,7 +4,7 @@ Django chunk S3 AV file uploader
 
 This library provides two Django file upload handlers. 
 
-The first of these ``s3`` provides chunk uploading to an AWS S3 bucket and is heavily based on 
+The first of these, ``s3`` provides chunk uploading to an AWS S3 bucket and is heavily based on 
 `<https://pypi.org/project/s3chunkuploader/>`_
 
 The second provides chunk uploading to a ClamAV rest endpoint provided by - `<https://github.com/uktrade/dit-clamav-rest/>`_ although it could be used with other compatibile projects.
@@ -80,6 +80,7 @@ Adds a timestamp to uploaded object's file name if set. Defaults to ``True``.
 
 ClamAV
 ***
+
 :code:`CLAM_AV_USERNAME`
 The ClamAV service username.
 
