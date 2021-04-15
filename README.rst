@@ -16,7 +16,7 @@ Installation
 
 .. code-block:: python
 
-    pip install django-chunk-s3-av-file-upload-handlers
+    pip install django-chunk-upload-handlers
 
 Usage
 -----
