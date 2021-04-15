@@ -6,3 +6,4 @@ django_chunk_upload_handlers.egg-info/
 __pycache__/
 build/
 dist/
+env/

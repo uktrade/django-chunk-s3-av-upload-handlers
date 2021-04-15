@@ -55,7 +55,7 @@ ADD_TIMESTAMP_TO_OBJECT_NAME = getattr(
 )
 
 CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND = getattr(
-    settings, "VirusFoundInFileException",
+    settings, "CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND",
     False,
 )
 
