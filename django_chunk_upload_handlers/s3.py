@@ -17,6 +17,7 @@ from storages.backends.s3boto3 import (
 )
 
 from django_chunk_upload_handlers.util import check_required_setting
+from django_chunk_upload_handlers.clam_av import FileWithVirus, VirusFoundInFileException
 
 
 logger = logging.getLogger(__name__)
@@ -28,21 +29,22 @@ class AbortS3UploadException(UploadFileException):
 
 # AWS
 AWS_ACCESS_KEY_ID = check_required_setting(
-    "CHUNK_UPLOADER_AWS_ACCESS_KEY_ID",
     "AWS_ACCESS_KEY_ID",
+    "CHUNK_UPLOADER_AWS_ACCESS_KEY_ID",
 )
 AWS_SECRET_ACCESS_KEY = check_required_setting(
-    "CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY",
     "AWS_SECRET_ACCESS_KEY",
+    "CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY",
 )
 AWS_STORAGE_BUCKET_NAME = check_required_setting(
-    "CHUNK_UPLOADER_AWS_STORAGE_BUCKET_NAME",
     "AWS_STORAGE_BUCKET_NAME",
+    "CHUNK_UPLOADER_AWS_STORAGE_BUCKET_NAME",
 )
 AWS_REGION = check_required_setting(
     "CHUNK_UPLOADER_AWS_REGION",
     "AWS_REGION",
 )
+
 S3_ROOT_DIRECTORY = getattr(settings, "CHUNK_UPLOADER_S3_ROOT_DIRECTORY", "")
 S3_MIN_PART_SIZE = 5 * 1024 * 1024
 
@@ -50,6 +52,11 @@ ADD_TIMESTAMP_TO_OBJECT_NAME = getattr(
     settings,
     "ADD_TIMESTAMP_TO_OBJECT_NAME",
     True,
+)
+
+CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND = getattr(
+    settings, "VirusFoundInFileException",
+    False,
 )
 
 if (
@@ -186,6 +193,11 @@ class S3FileUploadHandler(FileUploadHandler):
             ContentType=self.content_type,
         )
 
+        self.s3_client.delete_object(
+            Bucket=AWS_STORAGE_BUCKET_NAME,
+            Key=self.s3_key,
+        )
+
         if "clam_av_results" in self.content_type_extra:
             for result in self.content_type_extra["clam_av_results"]:
                 if result["file_name"] == self.file_name:
@@ -204,11 +216,17 @@ class S3FileUploadHandler(FileUploadHandler):
                             ContentType=self.content_type,
                             MetadataDirective="REPLACE",
                         )
+                    else:
+                        # Remove file with virus from S3
+                        self.s3_client.delete_object(
+                            Bucket=AWS_STORAGE_BUCKET_NAME,
+                            Key=self.new_file_name,
+                        )
 
-        self.s3_client.delete_object(
-            Bucket=AWS_STORAGE_BUCKET_NAME,
-            Key=self.s3_key,
-        )
+                        if CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND:
+                            raise VirusFoundInFileException()
+                        else:
+                            return FileWithVirus(field_name=self.field_name)
 
         storage = S3Boto3Storage()
         file = S3Boto3StorageFile(self.new_file_name, "rb", storage)

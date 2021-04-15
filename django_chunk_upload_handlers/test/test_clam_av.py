@@ -31,8 +31,8 @@ class ClamAVFileHandlerTestCase(TestCase):
             "file.txt",
             "text/plain",
             100,
-            content_type_extra=None,
         )
+        setattr(self.clam_av_file_handler, 'content_type_extra', {})
 
     @patch("django_chunk_upload_handlers.clam_av.HTTPSConnection")
     def test_init_connection(self, http_connection):
@@ -136,8 +136,11 @@ class ClamAVFileHandlerTestCase(TestCase):
             status=200, read=Mock(return_value='{ "malware": true, "reason": "test" }')
         )
 
-        with self.assertRaises(VirusFoundInFileException):
-            self.clam_av_file_handler.file_complete(0)
+        self.clam_av_file_handler.file_complete(0)
+
+        self.assertFalse(
+            self.clam_av_file_handler.content_type_extra["clam_av_results"][0]["av_passed"]
+        )
 
         self.assertEqual(ScannedFile.objects.count(), 1)
         self.assertFalse(ScannedFile.objects.first().av_passed)

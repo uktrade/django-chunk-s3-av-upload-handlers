@@ -10,7 +10,7 @@ def check_required_setting(setting_key, secondary_setting_key=""):
     if getattr(settings, setting_key, None) is None:
         if getattr(settings, secondary_setting_key, None) is None:
             # Nb cannot throw exception here because of
-            # Django bootstraping order of play
+            # Django bootstrap order of play
             logger.error(
                 f"Cannot process file uploads, a required setting, "
                 f"'{setting_key}', for a file upload handler is missing"

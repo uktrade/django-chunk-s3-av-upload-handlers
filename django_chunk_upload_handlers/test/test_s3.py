@@ -10,6 +10,8 @@ from django_chunk_upload_handlers.s3 import (
     ThreadedS3ChunkUploader,
 )
 
+from django_chunk_upload_handlers.clam_av import FileWithVirus, VirusFoundInFileException
+
 
 class S3FileHandlerTestCase(TestCase):
     def setUp(self):
@@ -69,12 +71,9 @@ class S3FileHandlerTestCase(TestCase):
             {"file_name": "file.txt", "av_passed": True, "scanned_at": datetime.now()}
         )
 
-        # Return ETag from mock so signature can be created
-        e_tag = "Test..."
-
         self.s3_file_handler.s3_client.head_object = MagicMock()
         self.s3_file_handler.s3_client.head_object.return_value = {
-            "ETag": e_tag,
+            "ETag": "Test...",
         }
 
         self.s3_file_handler.file_complete(0)
@@ -94,6 +93,36 @@ class S3FileHandlerTestCase(TestCase):
         self.assertTrue("av-passed" in second_copy_obj_call_list["Metadata"])
         self.assertTrue(second_copy_obj_call_list["Metadata"]["av-passed"])
 
+    @patch("django_chunk_upload_handlers.s3.boto3_client")
+    @patch("django_chunk_upload_handlers.s3.S3Boto3Storage")
+    @patch("django_chunk_upload_handlers.s3.S3Boto3StorageFile")
+    @patch("django_chunk_upload_handlers.s3.CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND", True)
+    def test_virus_found_with_raise_exception_setting(self, storage_file, storage, client):
+        self.create_s3_handler()
+
+        # Add content_type_extra which would have been added by file handler processor
+        self.s3_file_handler.content_type_extra = {"clam_av_results": []}
+        self.s3_file_handler.content_type_extra["clam_av_results"].append(
+            {"file_name": "file.txt", "av_passed": False, "scanned_at": datetime.now()}
+        )
+
+        with self.assertRaises(VirusFoundInFileException):
+            self.s3_file_handler.file_complete(0)
+
+    @patch("django_chunk_upload_handlers.s3.boto3_client")
+    @patch("django_chunk_upload_handlers.s3.S3Boto3Storage")
+    @patch("django_chunk_upload_handlers.s3.S3Boto3StorageFile")
+    def test_virus_found_without_raise_exception_setting(self, storage_file, storage, client):
+        self.create_s3_handler()
+
+        # Add content_type_extra which would have been added by file handler processor
+        self.s3_file_handler.content_type_extra = {"clam_av_results": []}
+        self.s3_file_handler.content_type_extra["clam_av_results"].append(
+            {"file_name": "file.txt", "av_passed": False, "scanned_at": datetime.now()}
+        )
+
+        outcome = self.s3_file_handler.file_complete(0)
+        self.assertEqual(type(outcome).__name__, "FileWithVirus")
 
 class ThreadedS3ChunkUploaderTestCase(TestCase):
     @patch("django_chunk_upload_handlers.s3.S3_MIN_PART_SIZE", 10)

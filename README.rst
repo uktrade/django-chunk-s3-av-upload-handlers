@@ -78,6 +78,9 @@ The directory path to use as root for uploads. ``CHUNK_UPLOADER_S3_ROOT_DIRECTOR
 :code:`ADD_TIMESTAMP_TO_OBJECT_NAME`
 Adds a timestamp to uploaded object's file name if set. Defaults to ``True``.
 
+:code:`CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND`
+Defines whether or not to throw an exception if a virus is found. Defaults to ``False``.
+
 ClamAV
 ******
 
@@ -98,6 +101,34 @@ A list of file extensions to not process with ClamAV. Defaults to an empty list.
 
 :code:`CLAM_USE_HTTP`
 Use http rather than https. Should not be used in production environments. Defaults to ``False``.
+
+Usage with file fields
+----------------------
+
+The package provides a validator for use with form and model fields.
+
+The ``CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND`` should not be set to ``True`` when using this validator.
+
+.. code-block:: python
+
+    from django import forms
+    from django_chunk_upload_handlers.clam_av import validate_virus_check_result
+
+
+    class ExampleForm(forms.Form):
+        example_form_field = forms.FileField(
+            validators=[validate_virus_check_result, ]
+        )
+
+    from django.db import models
+
+    class ExampleModel(models.Model):
+        example_model_field = models.FileField(
+            max_length=10,
+            validators=[validate_virus_check_result, ],
+        )
+
+The validation message will display 'A virus was found' if a virus is detected. This message is a translation string.
 
 Tests
 -----

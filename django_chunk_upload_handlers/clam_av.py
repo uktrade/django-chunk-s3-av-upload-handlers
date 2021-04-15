@@ -8,7 +8,13 @@ from http.client import HTTPConnection, HTTPSConnection
 # https://wiki.openstack.org/wiki/OSSN/OSSN-0033
 
 from django.conf import settings
-from django.core.files.uploadhandler import FileUploadHandler, UploadFileException
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import UploadedFile
+from django.core.files.uploadhandler import (
+    FileUploadHandler,
+    UploadFileException,
+)
+from django.utils.translation import gettext_lazy as _
 
 from django_chunk_upload_handlers.models import ScannedFile
 from django_chunk_upload_handlers.util import check_required_setting
@@ -30,6 +36,41 @@ CLAM_USE_HTTP = getattr(settings, "CLAM_USE_HTTP", False)  # Do not use in produ
 
 class VirusFoundInFileException(UploadFileException):
     pass
+
+
+def validate_virus_check_result(file):
+    try:
+        file.readline()
+    except VirusFoundInFileException:
+        raise ValidationError(
+            _('A virus was found'),
+        )
+
+
+class FileWithVirus(UploadedFile):
+    def __init__(self, field_name):
+        super().__init__(file="virus", name="virus", size="virus")
+        self.field_name = field_name
+
+    def open(self, mode=None):
+        raise VirusFoundInFileException(
+            "Cannot open file - virus was found",
+        )
+
+    def chunks(self, chunk_size=None):
+        raise VirusFoundInFileException(
+            "Cannot read file chunks - virus was found",
+        )
+
+    def multiple_chunks(self, chunk_size=None):
+        raise VirusFoundInFileException(
+            "Cannot read file chunks - virus was found",
+        )
+
+    def readline(self):
+        raise VirusFoundInFileException(
+            "Cannot read line - virus was found",
+        )
 
 
 class AntiVirusServiceErrorException(UploadFileException):
@@ -126,10 +167,9 @@ class ClamAVFileUploadHandler(FileUploadHandler):
                     f"Malware found in user uploaded file "
                     f"'{self.file_name}', exiting upload process"
                 )
-                raise VirusFoundInFileException()
-
-            scanned_file.av_passed = True
-            scanned_file.save()
+            else:
+                scanned_file.av_passed = True
+                scanned_file.save()
 
             # We are using 'content_type_extra' as the a means of making
             # the results available to following file handlers
@@ -142,7 +182,7 @@ class ClamAVFileUploadHandler(FileUploadHandler):
             self.content_type_extra["clam_av_results"].append(
                 {
                     "file_name": self.file_name,
-                    "av_passed": True,
+                    "av_passed": scanned_file.av_passed,
                     "scanned_at": scanned_file.scanned_at,
                 }
             )
