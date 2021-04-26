@@ -75,9 +75,6 @@ The AWS region to use. ``CHUNK_UPLOADER_AWS_REGION`` is preferred if both are se
 
 The directory path to use as root for uploads. ``CHUNK_UPLOADER_S3_ROOT_DIRECTORY`` is preferred if both are set.
 
-:code:`ADD_TIMESTAMP_TO_OBJECT_NAME`
-Adds a timestamp to uploaded object's file name if set. Defaults to ``True``.
-
 :code:`CHUNK_UPLOADER_RAISE_EXCEPTION_ON_VIRUS_FOUND`
 Defines whether or not to throw an exception if a virus is found. Defaults to ``False``.
 

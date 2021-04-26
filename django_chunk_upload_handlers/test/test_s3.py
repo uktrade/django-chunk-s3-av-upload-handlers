@@ -159,3 +159,20 @@ class ThreadedS3ChunkUploaderTestCase(TestCase):
         self.assertEqual(len(parts), 1)
         self.assertEqual(parts[0]["PartNumber"], 1)
         self.assertEqual(parts[0]["ETag"], test_etag)
+
+    @patch("django_chunk_upload_handlers.s3.S3Boto3StorageFile")
+    @patch("django_chunk_upload_handlers.s3.wait")
+    @patch("django_chunk_upload_handlers.s3.boto3_client")
+    def test_original_file_name_available(self, client, wait, storage):
+        threaded_s3_uploader = S3FileUploadHandler()
+        threaded_s3_uploader.executor = MagicMock()
+        threaded_s3_uploader.s3_client = MagicMock()
+        threaded_s3_uploader.s3_key = "test"
+        threaded_s3_uploader.upload_id = "test"
+        threaded_s3_uploader.content_type_extra = {}
+
+        threaded_s3_uploader.file_name = "filename.jpg"
+        threaded_s3_uploader.new_file_name = "newfilename.jpg"
+
+        test_file = threaded_s3_uploader.file_complete(file_size=1)
+        self.assertEqual(test_file.original_name, "filename.jpg")
