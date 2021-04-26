@@ -171,8 +171,8 @@ class ThreadedS3ChunkUploaderTestCase(TestCase):
         threaded_s3_uploader.upload_id = "test"
         threaded_s3_uploader.content_type_extra = {}
 
-        threaded_s3_uploader.file_name = "file name"
-        threaded_s3_uploader.new_file_name = "new file name"
+        threaded_s3_uploader.file_name = "filename.jpg"
+        threaded_s3_uploader.new_file_name = "newfilename.jpg"
 
         test_file = threaded_s3_uploader.file_complete(file_size=1)
-        self.assertEqual(test_file.original_name, "file name")
+        self.assertEqual(test_file.original_name, "filename.jpg")
