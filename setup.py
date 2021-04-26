@@ -11,7 +11,7 @@ setup(
     version="0.0.6",
     packages=setuptools.find_packages(),
     author="Ross Miller",
-    author_email="ross.miller@digita.trade.gov.uk",
+    author_email="ross.miller@digital.trade.gov.uk",
     url="https://github.com/uktrade/django-chunk-s3-av-upload-handlers",
     description="Chunking Django file handlers for S3 and ClamAV service uploads",
     long_description=long_description,
