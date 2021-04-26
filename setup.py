@@ -8,7 +8,7 @@ with open("README.rst", "r") as fh:
 
 setup(
     name="django_chunk_upload_handlers",
-    version="0.0.5",
+    version="0.0.6",
     packages=setuptools.find_packages(),
     author="Ross Miller",
     author_email="ross.miller@digita.trade.gov.uk",
