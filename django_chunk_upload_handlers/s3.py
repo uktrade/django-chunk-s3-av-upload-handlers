@@ -44,8 +44,9 @@ AWS_REGION = check_required_setting(
     "CHUNK_UPLOADER_AWS_REGION",
     "AWS_REGION",
 )
-
+S3_ENDPOINT_URL = getattr(settings, "S3_ENDPOINT_URL", None)
 S3_ROOT_DIRECTORY = getattr(settings, "CHUNK_UPLOADER_S3_ROOT_DIRECTORY", "")
+
 S3_MIN_PART_SIZE = 5 * 1024 * 1024
 
 ADD_TIMESTAMP_TO_OBJECT_NAME = getattr(
@@ -135,11 +136,16 @@ class S3FileUploadHandler(FileUploadHandler):
         time_stamp = f'{timezone.now().strftime("%Y%m%d%H%M%S")}'
         self.new_file_name = f"{S3_ROOT_DIRECTORY}{self.file_name.replace(extension, '')}_{time_stamp}{extension}"
 
+        extra_kwargs = {}
+        if S3_ENDPOINT_URL:
+            extra_kwargs['endpoint_url'] = S3_ENDPOINT_URL
+
         self.s3_client = boto3_client(
             "s3",
             aws_access_key_id=AWS_ACCESS_KEY_ID,
             aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             region_name=AWS_REGION,
+            **extra_kwargs,
         )
 
         self.parts = []
