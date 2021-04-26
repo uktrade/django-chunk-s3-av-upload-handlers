@@ -2,7 +2,10 @@ import concurrent.futures
 import logging
 import pathlib
 import uuid
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import (
+    wait,
+    ThreadPoolExecutor,
+)
 
 from boto3 import client as boto3_client
 from django.conf import settings
@@ -65,18 +68,15 @@ if (
     or settings.DEFAULT_FILE_STORAGE  # noqa W504
     != "storages.backends.s3boto3.S3Boto3Storage"  # noqa W503
 ):
-    # Nb cannot throw exception here because of
-    # Django order of play
     logger.warning(
-        "You must use S3Boto3Storage or a class that "
-        "inherits from it with this file handler"
+        "It is strongly recommended that you use S3Boto3Storage "
+        "or a class that inherits from it with this file handler"
     )
 
 if S3_ROOT_DIRECTORY and not S3_ROOT_DIRECTORY.endswith("/"):
     S3_ROOT_DIRECTORY = f"{S3_ROOT_DIRECTORY}/"
 
 
-# TODO - check to see if boto3 client needs reuse logic like in original
 class ThreadedS3ChunkUploader(ThreadPoolExecutor):
     def __init__(self, client, bucket, key, upload_id, max_workers=None):
         max_workers = max_workers or 10
@@ -179,7 +179,7 @@ class S3FileUploadHandler(FileUploadHandler):
         self.executor.add(None)
 
         # Wait for all threads to complete
-        concurrent.futures.wait(
+        wait(
             self.executor.futures, return_when=concurrent.futures.ALL_COMPLETED
         )
 
@@ -237,6 +237,7 @@ class S3FileUploadHandler(FileUploadHandler):
         storage = S3Boto3Storage()
         file = S3Boto3StorageFile(self.new_file_name, "rb", storage)
         file.content_type = self.content_type
+        file.original_name = self.file_name
 
         file.file_size = file_size
         file.close()
