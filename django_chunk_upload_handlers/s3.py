@@ -240,7 +240,7 @@ class S3FileUploadHandler(FileUploadHandler):
 
     def abort(self):
         self.s3_client.abort_multipart_upload(
-            Bucket=self.bucket_name,
+            Bucket=AWS_STORAGE_BUCKET_NAME,
             Key=self.s3_key,
             UploadId=self.upload_id,
         )
