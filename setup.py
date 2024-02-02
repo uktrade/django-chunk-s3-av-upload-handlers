@@ -17,7 +17,7 @@ setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     install_requires=[
-        "django~=4.2",
+        "django~=4.2.9",
         "boto3>=1.17.89",
         "django-storages>=1.11.1",
     ],
