@@ -128,10 +128,12 @@ class S3FileUploadHandler(FileUploadHandler):
         if AWS_S3_ENDPOINT_URL:
             extra_kwargs['endpoint_url'] = AWS_S3_ENDPOINT_URL
 
+        if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
+            extra_kwargs['aws_access_key_id'] = AWS_ACCESS_KEY_ID
+            extra_kwargs['aws_secret_access_key'] = AWS_SECRET_ACCESS_KEY
+
         self.s3_client = boto3_client(
             "s3",
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             region_name=AWS_REGION,
             **extra_kwargs,
         )
