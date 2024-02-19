@@ -2,7 +2,6 @@ import concurrent.futures
 from datetime import datetime
 from unittest.mock import MagicMock, call, patch
 
-from django.conf import settings
 from django.test import TestCase
 from django.test.client import RequestFactory
 
