@@ -22,13 +22,26 @@ settings.configure(
     ),
     TIME_ZONE="UTC",
     USE_TZ=True,
+    # Required django_chunk_upload_handlers app settings
+    # See django_chunk_upload_handlers/util.py (causes load_tests.py to error if not defined)
+    CLAM_AV_USERNAME="",
+    CLAM_AV_PASSWORD="",
+    CLAM_AV_DOMAIN="",
+    AWS_ACCESS_KEY_ID="",
+    AWS_SECRET_ACCESS_KEY="",
+    AWS_STORAGE_BUCKET_NAME="",
+    CHUNK_UPLOADER_AWS_REGION="",
 )
 
 django.setup()
 
 default_labels = ["django_chunk_upload_handlers.test", ]
 
-def get_suite(labels=default_labels):
+
+def get_suite(labels=None):
+    if labels is None:
+        labels = default_labels
+
     runner = DiscoverRunner(verbosity=1)
     failures = runner.run_tests(labels)
     if failures:
@@ -36,9 +49,11 @@ def get_suite(labels=default_labels):
 
     return TestSuite()
 
-if __name__ == "__main__":
-    labels = default_labels
-    if len(sys.argv[1:]) > 0:
-        labels = sys.argv[1:]
 
-    get_suite(labels)
+if __name__ == "__main__":
+    _labels = default_labels
+
+    if len(sys.argv[1:]) > 0:
+        _labels = sys.argv[1:]
+
+    get_suite(_labels)
