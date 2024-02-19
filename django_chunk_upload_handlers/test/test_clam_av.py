@@ -41,7 +41,7 @@ class ClamAVFileHandlerTestCase(TestCase):
         # Check that we made a connection
         http_connection.mock_calls[0] = call(test_clam_av_domain)
 
-    @patch("django_chunk_upload_handlers.clam_av.HTTPConnection")
+    @patch("django_chunk_upload_handlers.clam_av.HTTPSConnection")
     def test_chunk_is_received(self, http_connection):
         self.create_av_handler()
         self.clam_av_file_handler.av_conn = MagicMock()

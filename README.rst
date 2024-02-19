@@ -7,7 +7,7 @@ This library provides two Django file upload handlers.
 The first of these, ``s3`` provides chunk uploading to an AWS S3 bucket and is heavily based on 
 `<https://pypi.org/project/s3chunkuploader/>`_
 
-The second provides chunk uploading to a ClamAV rest endpoint provided by - `<https://github.com/uktrade/dit-clamav-rest/>`_ although it could be used with other compatibile projects.
+The second provides chunk uploading to a ClamAV rest endpoint provided by - `<https://github.com/uktrade/dit-clamav-rest/>`_ although it could be used with other compatible projects.
 
 If used together, the results of the anti virus check are written to the object uploaded to S3.
 
