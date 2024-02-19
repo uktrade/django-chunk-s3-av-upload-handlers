@@ -31,8 +31,12 @@ class AbortS3UploadException(UploadFileException):
 
 
 # AWS
-AWS_ACCESS_KEY_ID = getattr(settings, "AWS_ACCESS_KEY_ID", getattr(settings, 'CHUNK_UPLOADER_AWS_ACCESS_KEY_ID', None))
-AWS_SECRET_ACCESS_KEY = getattr(settings, "AWS_SECRET_ACCESS_KEY", getattr(settings, 'CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY', None))
+AWS_ACCESS_KEY_ID = getattr(settings,
+                            "CHUNK_UPLOADER_AWS_ACCESS_KEY_ID",
+                            getattr(settings, "AWS_ACCESS_KEY_ID", None))
+AWS_SECRET_ACCESS_KEY = getattr(settings,
+                                "CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY",
+                                getattr(settings, "AWS_SECRET_ACCESS_KEY", None))
 AWS_STORAGE_BUCKET_NAME = check_required_setting(
     "AWS_STORAGE_BUCKET_NAME",
     "CHUNK_UPLOADER_AWS_STORAGE_BUCKET_NAME",
