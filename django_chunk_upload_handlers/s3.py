@@ -31,14 +31,12 @@ class AbortS3UploadException(UploadFileException):
 
 
 # AWS
-AWS_ACCESS_KEY_ID = check_required_setting(
-    "AWS_ACCESS_KEY_ID",
-    "CHUNK_UPLOADER_AWS_ACCESS_KEY_ID",
-)
-AWS_SECRET_ACCESS_KEY = check_required_setting(
-    "AWS_SECRET_ACCESS_KEY",
-    "CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY",
-)
+AWS_ACCESS_KEY_ID = getattr(settings,
+                            "CHUNK_UPLOADER_AWS_ACCESS_KEY_ID",
+                            getattr(settings, "AWS_ACCESS_KEY_ID", None))
+AWS_SECRET_ACCESS_KEY = getattr(settings,
+                                "CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY",
+                                getattr(settings, "AWS_SECRET_ACCESS_KEY", None))
 AWS_STORAGE_BUCKET_NAME = check_required_setting(
     "AWS_STORAGE_BUCKET_NAME",
     "CHUNK_UPLOADER_AWS_STORAGE_BUCKET_NAME",
@@ -134,10 +132,12 @@ class S3FileUploadHandler(FileUploadHandler):
         if AWS_S3_ENDPOINT_URL:
             extra_kwargs['endpoint_url'] = AWS_S3_ENDPOINT_URL
 
+        if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
+            extra_kwargs['aws_access_key_id'] = AWS_ACCESS_KEY_ID
+            extra_kwargs['aws_secret_access_key'] = AWS_SECRET_ACCESS_KEY
+
         self.s3_client = boto3_client(
             "s3",
-            aws_access_key_id=AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             region_name=AWS_REGION,
             **extra_kwargs,
         )

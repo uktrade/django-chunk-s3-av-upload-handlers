@@ -32,10 +32,8 @@ class S3FileHandlerTestCase(TestCase):
 
     @patch("django_chunk_upload_handlers.s3.boto3_client")
     @patch("django_chunk_upload_handlers.s3.ThreadedS3ChunkUploader")
-    def test_init_connection(self, thread_pool, boto3_client):
-        self.s3_file_handler = S3FileUploadHandler(
-            request=self.request,
-        )
+    def test_init_connection_without_environment(self, thread_pool, boto3_client):
+        self.s3_file_handler = S3FileUploadHandler(request=self.request)
         self.s3_file_handler.new_file(
             "file",
             "file.txt",
@@ -45,6 +43,29 @@ class S3FileHandlerTestCase(TestCase):
         )
 
         self.s3_file_handler.s3_client.create_multipart_upload.assert_called_once()
+        boto3_client.assert_called_with("s3", region_name="")
+
+        thread_pool.assert_called_once()
+
+    @patch("django_chunk_upload_handlers.s3.boto3_client")
+    @patch("django_chunk_upload_handlers.s3.ThreadedS3ChunkUploader")
+    @patch("django_chunk_upload_handlers.s3.AWS_ACCESS_KEY_ID", 'access-key')
+    @patch("django_chunk_upload_handlers.s3.AWS_SECRET_ACCESS_KEY", 'secret-key')
+    def test_init_connection_with_environment(self, thread_pool, boto3_client):
+        self.s3_file_handler = S3FileUploadHandler(request=self.request)
+        self.s3_file_handler.new_file(
+            "file",
+            "file.txt",
+            "text/plain",
+            100,
+            content_type_extra=None,
+        )
+
+        self.s3_file_handler.s3_client.create_multipart_upload.assert_called_once()
+        boto3_client.assert_called_with("s3",
+                                        region_name="",
+                                        aws_access_key_id='access-key',
+                                        aws_secret_access_key='secret-key')
 
         thread_pool.assert_called_once()
 

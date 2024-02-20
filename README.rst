@@ -53,12 +53,12 @@ S3
 :code:`AWS_ACCESS_KEY_ID`
 :code:`CHUNK_UPLOADER_AWS_ACCESS_KEY_ID`
 
-Provide either for the AWS access key required. ``CHUNK_UPLOADER_AWS_ACCESS_KEY_ID`` is preferred if both are set.
+Provide either for the AWS access key optional. ``CHUNK_UPLOADER_AWS_ACCESS_KEY_ID`` is preferred if both are set.
 
 :code:`AWS_SECRET_ACCESS_KEY`
 :code:`CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY`
 
-Provide either for the AWS access secret key required. ``CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY`` is preferred if both are set.
+Provide either for the AWS access secret key optional. ``CHUNK_UPLOADER_AWS_SECRET_ACCESS_KEY`` is preferred if both are set.
 
 :code:`AWS_STORAGE_BUCKET_NAME`
 :code:`CHUNK_UPLOADER_AWS_STORAGE_BUCKET_NAME`
