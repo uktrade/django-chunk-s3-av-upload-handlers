@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: pip install -r requirements.txt
-      - run: pip install django==${{ matrix.django-version }}
+      - run: pip install django${{ matrix.django-version }}
       - run: python load_tests.py
       # - run: tox
       #   env:
