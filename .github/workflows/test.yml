@@ -21,6 +21,6 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: tox -e "py${PYTHON_VERSION/./}"
+      - run: tox
         env:
           PYTHON_VERSION: ${{ matrix.python-version }}
