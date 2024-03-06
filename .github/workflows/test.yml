@@ -9,18 +9,14 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version:
-          - "3.12"
-          - "3.11"
-          - "3.10"
-          - "3.9"
-          - "3.8"
+        python-version: ["3.12", "3.11", "3.10", "3.9", "3.8"]
+        django-version: ["4.2.*", "5.0.*", "latest"]
 
     steps:
       - uses: actions/checkout@v4
-
       - run: pip install -r requirements.txt
-
-      - run: tox
-        env:
-          PYTHON_VERSION: ${{ matrix.python-version }}
+      - run: pip install django==${{ matrix.django-version }}
+      - run: python load_tests.py
+      # - run: tox
+      #   env:
+      #     PYTHON_VERSION: ${{ matrix.python-version }}
